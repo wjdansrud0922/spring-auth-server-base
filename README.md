@@ -2,76 +2,6 @@
 
 Spring Security와 JWT를 이용한 인증 서버
 
-### 파일 구조
-
-```
-├── src/
-│   └── main/
-│       ├── java/
-│       │   └── com/
-│       │       └── wjdansrud/
-│       │           └── springauthserverbase/
-│       │               └── SpringAuthServerBaseApplication.java
-│       └── resources/
-│           └── application.yml
-```
-
-### 환경변수
-
-```
-spring:
-  jackson:
-    property-naming-strategy: SNAKE_CASE
-
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/<DB_NAME>?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
-    username: <DB_USERNAME>
-    password: <DB_PASSWORD>
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        use_sql_comments: true
-
-  data:
-    redis:
-      host: <REDIS_HOST>
-      port: <REDIS_PORT>
-      key:
-        REDIS_REFRESH_KEY_BASE: <KEY>
-        REDIS_EMAIL_CODE_BASE: <KEY>
-        REDIS_EMAIL_VERIFICATION_BASE: <KEY>
-
-  jwt:
-    access-token:
-      secret: <JWT_ACCESS_SECRET>
-      expiration: 3600000  # 1시간 (ms)
-    refresh-token:
-      secret: <JWT_REFRESH_SECRET>
-      expiration: 604800000  # 7일 (ms)
-
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: <EMAIL_USERNAME>
-    password: <EMAIL_APP_PASSWORD>
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-
-application:
-  name: <PROJECT_NAME>
-
-```
-
 ### API
 ### 1. 회원가입
 
@@ -208,3 +138,128 @@ application:
   "success": true
 }
 ```
+
+### 파일 구조
+
+```
+spring-auth-server-base/
+├── src/
+│   └── main/
+│       ├── java/
+│       │   └── com/wjdansrud/springauthserverbase/
+│       │       ├── SpringAuthServerBaseApplication.java
+│       │
+│       │       ├── auth/
+│       │       │   ├── controller/
+│       │       │   │   └── AuthController.java
+│       │       │   ├── dto/
+│       │       │   │   ├── req/
+│       │       │   │   │   ├── CodeRequest.java
+│       │       │   │   │   ├── EmailRequest.java
+│       │       │   │   │   ├── RefreshToken.java
+│       │       │   │   │   ├── SigninRequest.java
+│       │       │   │   │   └── SignupRequest.java
+│       │       │   │   └── res/
+│       │       │   │       └── TokenPair.java
+│       │       │   ├── service/
+│       │       │   │   ├── AuthService.java
+│       │       │   │   └── MailService.java
+│       │       │   ├── util/
+│       │       │   │   └── CodeGenerator.java
+│       │       │   └── config/
+│       │       │       ├── SecurityConfig.java
+│       │       │       ├── CustomUserDetailsService.java
+│       │       │       ├── UserPrincipal.java
+│       │       │       └── jwt/
+│       │       │           ├── JwtAuthenticationFilter.java
+│       │       │           ├── JwtGenerator.java
+│       │       │           ├── JwtService.java
+│       │       │           ├── JwtUtil.java
+│       │       │           └── TokenStatus.java
+│       │
+│       │       ├── user/
+│       │       │   ├── UserRepository.java
+│       │       │   └── entity/
+│       │       │       ├── Role.java
+│       │       │       └── User.java
+│       │
+│       │       ├── redis/
+│       │       │   ├── RedisConfig.java
+│       │       │   └── RedisService.java
+│       │
+│       │       ├── common/
+│       │       │   ├── code/
+│       │       │   │   ├── AuthErrorCode.java
+│       │       │   │   ├── AuthSuccessCode.java
+│       │       │   │   ├── ErrorCode.java
+│       │       │   │   ├── SuccessCode.java
+│       │       │   │   └── UserErrorCode.java
+│       │       │   ├── response/
+│       │       │   │   ├── ErrorResponse.java
+│       │       │   │   └── SuccessResponse.java
+│       │       │   ├── exception/
+│       │       │   │   ├── AuthException.java
+│       │       │   │   └── UserException.java
+│       │       │   └── GlobalExceptionHandler.java
+│
+│       └── resources/
+│           └── application.yml
+
+```
+
+### 환경변수
+
+```
+spring:
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/<DB_NAME>?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+    username: <DB_USERNAME>
+    password: <DB_PASSWORD>
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+
+  data:
+    redis:
+      host: <REDIS_HOST>
+      port: <REDIS_PORT>
+      key:
+        REDIS_REFRESH_KEY_BASE: <KEY>
+        REDIS_EMAIL_CODE_BASE: <KEY>
+        REDIS_EMAIL_VERIFICATION_BASE: <KEY>
+
+  jwt:
+    access-token:
+      secret: <JWT_ACCESS_SECRET>
+      expiration: 3600000  # 1시간 (ms)
+    refresh-token:
+      secret: <JWT_REFRESH_SECRET>
+      expiration: 604800000  # 7일 (ms)
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: <EMAIL_USERNAME>
+    password: <EMAIL_APP_PASSWORD>
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+application:
+  name: <PROJECT_NAME>
+
+```
+
