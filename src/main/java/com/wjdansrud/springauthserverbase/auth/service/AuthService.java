@@ -39,7 +39,7 @@ public class AuthService {
 
     public void sendEmailCode(String email) {
         if (userRepository.existsByEmail(email)) {
-            throw new AuthException(AuthErrorCode.EMAIL_DUPLICATED);
+            throw new AuthException(AuthErrorCode.DUPLICATE_EMAIL);
         }
 
         String code = codeGenerator.generateCode(); //코드 생성
@@ -54,7 +54,7 @@ public class AuthService {
         String savedCode = redisService.get(Codekey, String.class); //레디스에서 코드 조회
 
         if (savedCode == null || !savedCode.equals(codeRequest.getCode())) {
-            throw new AuthException(AuthErrorCode.INVALID_EMAIL_CODE);
+            throw new AuthException(AuthErrorCode.INVALID_EMAIL_VERIFICATION_CODE);
         }
 
         redisService.delete(Codekey);
@@ -71,7 +71,7 @@ public class AuthService {
         String emailKey = REDIS_EMAIL_VERIFICATION_BASE + ":" + req.getEmail();
 
         if (userRepository.existsByEmail(req.getEmail())) {
-            throw new AuthException(AuthErrorCode.EMAIL_DUPLICATED);
+            throw new AuthException(AuthErrorCode.DUPLICATE_EMAIL);
         }
 
         if (redisService.get(emailKey, String.class) == null) {
@@ -94,7 +94,7 @@ public class AuthService {
                 .orElseThrow(() -> new AuthException(AuthErrorCode.USER_NOT_FOUND));
 
         if (!passwordEncoder.matches(req.getPassword(), u.getPassword())) {
-            throw new AuthException(AuthErrorCode.PASSWORD_MISMATCH);
+            throw new AuthException(AuthErrorCode.INVALID_PASSWORD);
         }
 
         String accessToken = jwtService.generateAccessToken(u); //엑세스 토큰 발급
@@ -109,8 +109,10 @@ public class AuthService {
      * @return 새로운 액세스 토큰과 리프레시 토큰을 포함하는 TokenPair 객체
      */
     public TokenPair refresh(RefreshToken refreshToken) {
-        String id = jwtService.getRefreshAuthentication(refreshToken.getRefreshToken()).getName(); //리프레시 토큰으로 인증 객체에서 id 추출 (getName()이 id 반환함)
-        User user = userRepository.findById(UUID.fromString(id))
+        String email = jwtService.getRefreshAuthentication(refreshToken.getRefreshToken()).getName(); //리프레시 토큰으로 인증 객체에서 id 추출 (getName()이 id 반환함)
+
+        System.out.println("[AuthService] refresh: email = " + email + ", refreshToken = " + refreshToken.getRefreshToken());
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AuthException(AuthErrorCode.USER_NOT_FOUND)); //리프레시 토큰으로 인증 객체에서 id 추출 후 사용자 조회
 
 
@@ -122,7 +124,7 @@ public class AuthService {
 
             return new TokenPair(newAccessToken, newRefreshToken);
         } else {
-            throw new AuthException(AuthErrorCode.REFRESH_TOKEN_INVALID); //리프레시 토큰이 유효하지 않은 경우 예외 발생
+            throw new AuthException(AuthErrorCode.INVALID_REFRESH_TOKEN); //리프레시 토큰이 유효하지 않은 경우 예외 발생
         }
 
 

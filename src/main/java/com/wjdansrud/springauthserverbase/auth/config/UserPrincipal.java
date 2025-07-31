@@ -33,7 +33,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getUsername(); // Username을 반환
+        return user.getEmail(); // Username을 반환
     }
 
     public User getUser() {

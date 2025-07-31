@@ -23,7 +23,7 @@ public class JwtGenerator {
         long now = System.currentTimeMillis();
         return Jwts.builder()
                 .setHeader(HEADER)
-                .setSubject(String.valueOf(user.getEmail()))      // sub: email
+                .setSubject(user.getEmail())      // sub: email
                 .claim("role", user.getRole().getKey())         // 권한 정보
                 .setExpiration(new Date(now + expMillis))       // 만료시간
                 .signWith(secret, SignatureAlgorithm.HS256)     // 서명
